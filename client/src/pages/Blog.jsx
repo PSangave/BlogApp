@@ -1,6 +1,7 @@
 import { Box, styled, Typography } from "@mui/material";
 import Banner from "../components/Banner";
 import Header from "../components/Header";
+import CommentCard from "../components/CommentCard";
 import { CiRead } from "react-icons/ci";
 import { AiTwotoneLike } from "react-icons/ai";
 
@@ -14,6 +15,11 @@ const BoxContainer = styled(Box)
 
 const BlogTitle = styled(Typography)`
         font-size: 60px;
+        font-family: 'Montserrat', sans-serif;
+`;
+
+const CommentTitle = styled(Typography)`
+        font-size: 30px;
         font-family: 'Montserrat', sans-serif;
 `;
 
@@ -70,6 +76,9 @@ const Blog = () => {
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis totam officia fugiat nihil. Aliquam eveniet nulla reprehenderit eius delectus accusamus aut libero corrupti! Esse a rerum nisi similique, iure aut! Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis totam officia fugiat nihil. Aliquam eveniet nulla reprehenderit eius delectus accusamus aut libero corrupti! Esse a rerum nisi similique, iure aut!
                                 <br /><br />
                                 </BlogContent>
+                                <CommentTitle>Comments</CommentTitle>
+                                <CommentCard></CommentCard>
+                                <CommentCard></CommentCard>
                         </BoxContainer>
                 </>
         );
