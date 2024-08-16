@@ -1,5 +1,4 @@
 import { Box, Divider, styled, Typography } from "@mui/material";
-import { CiRead } from "react-icons/ci";
 import { AiTwotoneLike } from "react-icons/ai";
 
 const BoxComponent = styled(Box)

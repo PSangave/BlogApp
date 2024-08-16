@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { Box, Button, TextField, styled, Typography } from '@mui/material';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // import styles
-import Header from '../components/Header';
+import { useState } from "react";
+import { Box, Button, TextField, styled, Typography } from "@mui/material";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // import styles
+import Header from "../components/Header";
+import { getValueFromCookie } from "../utils/utility";
+import axios from "axios";
 
 const Container = styled(Box)`
   width: 50%;
@@ -12,37 +14,44 @@ const Container = styled(Box)`
 
 const FormTitle = styled(Typography)`
   font-size: 30px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   margin-bottom: 20px;
 `;
 
-
 const BlogForm = () => {
-  const [blogData, setBlogData] = useState({
-    title: '',
-    author: '',
-    date: '',
-    content: '',
-  });
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Optional: Disable submit button during submission
 
-  const handleChange = (e) => {
-    setBlogData({
-      ...blogData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleContentChange = (content) => {
-    setBlogData({
-      ...blogData,
-      content,
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(blogData);
-    // Add your logic to save the blog data (e.g., send it to your backend or update the state)
+    setIsSubmitting(true);
+
+    const author =
+      getValueFromCookie(document.cookie, "given_name") +
+      " " +
+      getValueFromCookie(document.cookie, "family_name");
+
+    const jti = getValueFromCookie(document.cookie, "jti");
+
+    const likes = 0;
+    const postData = { title, author, content, likes, jti };
+
+    try {
+      await axios.post("http://localhost:5000/post", postData);
+      console.log("Blog Uploaded!");
+
+      // Reset the form fields
+      setTitle('');
+      setContent('');
+
+      alert("Blog Uploaded Successfully...");
+      
+    } catch (err) {
+      console.error("Problem in blog upload ", err.response?.data || err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -55,27 +64,30 @@ const BlogForm = () => {
             fullWidth
             label="Blog Title"
             name="title"
-            value={blogData.title}
-            onChange={handleChange}
+            value={title}  // Bind value to state
+            onChange={(e) => setTitle(e.target.value)}
             margin="normal"
+            required
           />
-          
-          <Typography variant="h6" style={{ marginTop: '20px' }}>
+
+          <Typography variant="h6" style={{ marginTop: "20px" }}>
             Blog Content
           </Typography>
           <ReactQuill
             theme="snow"
-            value={blogData.content}
-            onChange={handleContentChange}
-            style={{ marginBottom: '20px', height: '300px' }}
+            value={content}  // Bind value to state
+            onChange={setContent}
+            style={{ marginBottom: "20px", height: "300px" }}
+            required
           />
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            style={{ marginTop: '30px', width: "100%" }}
+            style={{ marginTop: "30px", width: "100%" }}
+            disabled={isSubmitting}  // Disable button while submitting
           >
-            Submit
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         </form>
       </Container>

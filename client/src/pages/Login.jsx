@@ -1,10 +1,15 @@
 import * as React from "react";
-
 import { Box, TextField, styled } from "@mui/material";
 import Button from "@mui/joy/Button";
 import Divider from "@mui/joy/Divider";
-import { Google } from "@mui/icons-material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
+import {jwtDecode} from "jwt-decode";
+import { useNavigate } from "react-router-dom";  // Import useNavigate
+import { getValueFromCookie } from "../utils/utility";
+import axios from 'axios';
+
 
 import icon from "../assets/login_page_icon.png";
 
@@ -53,7 +58,29 @@ const DividerComponent = styled(Divider)`
   margin-bottom: 20px;
 `;
 
+const GoogleOAuthProviderComponent = styled(GoogleOAuthProvider)`
+  border: 3px solid;
+`;
+
+const GoogleOAuthBox = styled(Box)`
+  margin: auto;
+`;
+
+// Function to save user data to db
+async function saveUserData(userData) {
+    try {
+      await axios
+        .post("http://localhost:5000/create_user", userData)
+        .then(res => console.log("Data uploaded!"))
+        .catch(err => console.error(err));
+    } catch (err) {
+        console.log("User data not stored: ", err);
+    }
+}
+
 const Login = () => {
+  const navigate = useNavigate();  // Initialize useNavigate hook
+
   let initialSignupText = {
     name: "",
     email: "",
@@ -61,7 +88,6 @@ const Login = () => {
   };
 
   const [account, toggleAccount] = useState("login");
-
   const [signup, setSignup] = useState(initialSignupText);
 
   const changeToggle = () => {
@@ -70,10 +96,21 @@ const Login = () => {
 
   const setTextInput = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
-    console.log(initialSignupText);
+    // console.log(initialSignupText);
   };
 
-  const signupUser = () => { };
+  const signupUser = () => {};
+
+  useEffect(() => {
+    const token = getValueFromCookie('given_name');
+    if (token) {
+      // console.log('Token found:', token);
+      // Redirect to another page if token exists
+      navigate('/');  // Adjust this path as needed
+    } else {
+      console.log('No token found');
+    }
+  }, [navigate]);
 
   return (
     <>
@@ -100,9 +137,41 @@ const Login = () => {
               Create new account
             </ButtonComponent>
             <DividerComponent>Or</DividerComponent>
-            <ButtonComponent startDecorator={<Google />} color="warning">
-              Continue with Google
-            </ButtonComponent>
+            <GoogleOAuthBox>
+              <GoogleOAuthProviderComponent clientId="830129100854-6eo07cq6rh96ckbvnn0tlejitpj17jqj.apps.googleusercontent.com">
+                <GoogleLogin
+                  onSuccess={(credentialResponse) => {
+                    const decoded = jwtDecode(credentialResponse.credential);
+
+                    // storing in cookies
+
+                    document.cookie=`given_name=${decoded.given_name}`;
+                    document.cookie=`family_name=${decoded.family_name}`;
+                    document.cookie=`email=${decoded.email}`; 
+                    document.cookie=`jti=${decoded.jti}`;
+                    document.cookie=`picture=${decoded.picture}`;
+                    // console.log(decoded);
+                    
+                    // Saving to db
+                    const first_name = decoded.given_name;
+                    const last_name = decoded.family_name;
+                    const email = decoded.email;
+                    const jti = decoded.jti;
+                    const image_url = decoded.picture;
+
+                    saveUserData({first_name, last_name, email, jti, image_url});
+                    
+                    setTimeout(() => {
+                      navigate('/');  // Redirect to home after successful login
+                    }, 2000);
+                    
+                  }}
+                  onError={() => {
+                    console.log("Login Failed");
+                  }}
+                />
+              </GoogleOAuthProviderComponent>
+            </GoogleOAuthBox>
           </BoxComponent>
         ) : (
           <BoxComponent>
@@ -143,9 +212,3 @@ const Login = () => {
 };
 
 export default Login;
-
-/**
- * TODO:
- * 1. Complete the Login UI and SignUp UI with backend
- *
- */
