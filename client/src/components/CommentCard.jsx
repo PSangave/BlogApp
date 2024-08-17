@@ -50,17 +50,24 @@ const ReadLikeHolder = styled(Box)`
         margin-bottom: 10px;
 `;
 
-const Card = () => {
+const CommentCard = ({author, date, content, likes}) => {
+        const dateDay =
+        new Date(date).getDate() +
+        "/ " +
+        new Date(date).getMonth() +
+        "/ " +
+        new Date(date).getFullYear();
+        console.log("FROM: ", author);
         return (
                 <BoxComponent>
                         <ContentHolder>
                                 <DateAuthorHolder>
-                                        <CommentAuthor>By Pranav Sangave</CommentAuthor>      
-                                        <CommentDate>02/28</CommentDate>
+                                        <CommentAuthor>{author}</CommentAuthor>      
+                                        <CommentDate>{dateDay}</CommentDate>
                                 </DateAuthorHolder>
-                                <BlogContent>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis totam officia fugiat nihil. Aliquam eveniet nulla reprehenderit eius delectus accusamus aut libero corrupti! Esse a rerum nisi similique, iure aut!</BlogContent>
+                                <BlogContent>{content}</BlogContent>
                                 <ReadLikeHolder>
-                                        <BlogLikes><AiTwotoneLike /> 100</BlogLikes>
+                                        <BlogLikes><AiTwotoneLike /> {likes}</BlogLikes>
                                 </ReadLikeHolder>
                                 <Divider></Divider>
                         </ContentHolder>
@@ -68,6 +75,6 @@ const Card = () => {
         );
 }
 
-export default Card;
+export default CommentCard;
 
 

@@ -1,10 +1,18 @@
-import { Box, styled, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  styled,
+  Typography,
+} from "@mui/material";
 import Banner from "../components/Banner";
 import Header from "../components/Header";
 import CommentCard from "../components/CommentCard";
-import { CiRead } from "react-icons/ci";
 import { AiTwotoneLike } from "react-icons/ai";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { getValueFromCookie } from "../utils/utility";
 
 const BoxContainer = styled(Box)`
   width: 70%;
@@ -52,15 +60,76 @@ const ReadLikeHolder = styled(Box)`
   margin-left: 5px;
 `;
 
+const CommentBoxContainer = styled(Box)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+`;
+
 const Blog = () => {
-  const location = useLocation();
-  const { title, date, author, content, likes } = location.state || {};
+  const { id } = useParams();
+  const [cmntTxt, setCmntTxt] = useState("");
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [author, setAuthor] = useState("");
+  const [likes, setLikes] = useState("");
+  const [content, setContent] = useState("");
+  const [comment, setComment] = useState([]);
+  const [refreshId, setRefreshId] = useState("");
+
+  useEffect(() => {
+    console.log("Effect Calling...");
+
+    async function getBlogFromId() {
+      const resp = await axios.get(`http://localhost:5000/get_blog/${id}`);
+      console.log("Calling...");
+
+      setTitle(resp.data.title);
+      setDate(resp.data.createdAt);
+      setAuthor(resp.data.author);
+      setLikes(resp.data.likes);
+      setContent(resp.data.content);
+      setComment(resp.data.comments);
+    }
+
+    getBlogFromId();
+  }, [id, refreshId]); // Add refreshId as a dependency
+
+  const handleSubmit = () => {
+    const blog_id = id;
+    const comment_content = cmntTxt;
+    const likes = 0;
+    const comment_author = getValueFromCookie(document.cookie, "given_name") + " " +getValueFromCookie(document.cookie, "family_name");
+    console.log(comment_author);
+    async function postComment() {
+      alert("Called");
+      await axios
+        .post("http://localhost:5000/post_comment", {
+          blog_id,
+          comment_content,
+          likes,
+          comment_author
+        })
+        .then((r) => console.log("Comment Posted"))
+        .catch((e) => console.log("Failed to post comment: " + e.message));
+
+      alert("Commented Successfully!");
+
+      setCmntTxt("");
+
+      // Update refreshId to trigger useEffect
+      setRefreshId(`refresh_${Date.now()}`);
+    }
+    postComment();
+  };
+
   const dateDay =
     new Date(date).getDate() +
     "/ " +
     new Date(date).getMonth() +
     "/ " +
     new Date(date).getFullYear();
+    
   return (
     <>
       <Header />
@@ -80,8 +149,35 @@ const Blog = () => {
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </BlogContent>
         <CommentTitle>Comments</CommentTitle>
-        <CommentCard></CommentCard>
-        <CommentCard></CommentCard>
+        <CommentBoxContainer>
+          <TextField
+            fullWidth
+            label="Make a comment"
+            name="title"
+            margin="normal"
+            value={cmntTxt}
+            onChange={(e) => setCmntTxt(e.target.value)}
+            style={{ marginRight: "20px", height: "40px", marginTop: "0px" }}
+            required
+          />
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            color="primary"
+            style={{ height: "55px", marginTop: "5px" }}
+          >
+            Post
+          </Button>
+        </CommentBoxContainer>
+        {comment.map((cmnt, i) => (
+          <CommentCard
+            key={i}
+            author={"Pranav"}
+            date={cmnt.createdAt}
+            content={cmnt.comment_content}
+            likes={cmnt.like}
+          />
+        ))}
       </BoxContainer>
     </>
   );
