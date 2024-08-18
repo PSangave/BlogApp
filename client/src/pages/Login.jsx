@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Box, TextField, styled } from "@mui/material";
 import Button from "@mui/joy/Button";
-import Divider from "@mui/joy/Divider";
+// import Divider from "@mui/joy/Divider";
 import { useState, useEffect } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
@@ -42,6 +42,7 @@ const CardTitle = styled("p")({
 
 const CardDesc = styled("p")({
   marginTop: 0,
+  marginBottom: 40,
 });
 
 const TFComponent = styled(TextField)`
@@ -54,9 +55,9 @@ const ButtonComponent = styled(Button)`
   margin-top: 0px;
 `;
 
-const DividerComponent = styled(Divider)`
-  margin-bottom: 20px;
-`;
+// const DividerComponent = styled(Divider)`
+//   margin-bottom: 20px;
+// `;
 
 const GoogleOAuthProviderComponent = styled(GoogleOAuthProvider)`
   border: 3px solid;
@@ -120,7 +121,7 @@ const Login = () => {
             <Image src={icon} alt="logo" />
             <CardTitle>Log in to your account</CardTitle>
             <CardDesc>Start writing your thoughts.</CardDesc>
-            <TFComponent
+            {/* <TFComponent
               variant="outlined"
               label="Enter your email"
               size="small"
@@ -136,7 +137,7 @@ const Login = () => {
             <ButtonComponent onClick={() => changeToggle()}>
               Create new account
             </ButtonComponent>
-            <DividerComponent>Or</DividerComponent>
+            <DividerComponent>Or</DividerComponent> */}
             <GoogleOAuthBox>
               <GoogleOAuthProviderComponent clientId="830129100854-6eo07cq6rh96ckbvnn0tlejitpj17jqj.apps.googleusercontent.com">
                 <GoogleLogin

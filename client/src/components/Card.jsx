@@ -1,6 +1,8 @@
 import { Box, styled, Typography } from "@mui/material";
 import { AiTwotoneLike } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { useParams } from 'react-router-dom';
+
 
 // Styled components as you have defined them
 const BoxComponent = styled(Box)`
@@ -87,7 +89,7 @@ const ReadLikeHolder = styled(Box)`
 `;
 
 // Updated Card component with correct props destructuring
-const Card = ({ key, title, date, author, content, likes }) => {
+const Card = ({ id, title, date, author, content, likes }) => {
   const navigate = useNavigate();
   const dateDay =
   new Date(date).getDate() +
@@ -96,9 +98,7 @@ const Card = ({ key, title, date, author, content, likes }) => {
   "/ " +
   new Date(date).getFullYear();
   const handleClick = () => {
-    navigate(`/blog/${key}`, {
-      state: { title, date, author, content, likes },
-    });
+    navigate(`/blog/${id}`);
   };
 
   const truncateContent = (content, wordLimit) => {

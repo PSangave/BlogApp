@@ -4,7 +4,6 @@ import axios from "axios";
 
 const BlogCardContainer = () => {
   const [posts, setPosts] = useState([]);
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -21,10 +20,12 @@ const BlogCardContainer = () => {
   return (
     <>
     {/* {console.log("POST_SIZE: ", posts.size())} */}
+      
       {      
       posts.map((post) => (
         <Card
           key={post._id}
+          id = {post._id}
           title={post.title}
           date={post.createdAt}
           author={post.author}
