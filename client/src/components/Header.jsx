@@ -4,6 +4,7 @@ import {Box,styled} from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
 import { deleteJTICookie, getValueFromCookie } from "../utils/utility";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 const BoxComponent = styled(Box)`
         width: 100%;
@@ -19,6 +20,8 @@ const LinkComponent = styled(Link)`
 
 const Header = () => {
   const navigate = useNavigate();  // Initialize useNavigate hook
+  const dispatch = useDispatch();
+
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -35,6 +38,7 @@ const Header = () => {
     deleteJTICookie();
     deleteJTICookie();
     deleteJTICookie();
+    dispatch({ type: 'LOGOUT' });
     setTimeout(() => {
       navigate('/login');
     }, 1000);
@@ -65,7 +69,7 @@ const Header = () => {
         <Toolbar>
           <BoxComponent>
                 <LinkComponent to="/" color="inherit">Home</LinkComponent>
-                <LinkComponent color="inherit">About Us</LinkComponent>
+                {/* <LinkComponent color="inherit">About Us</LinkComponent> */}
 
 
                 <LinkComponent onClick={handleWriteBlogClick} color="inherit">Write Your Blog</LinkComponent>

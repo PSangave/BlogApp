@@ -120,11 +120,11 @@ const Card = ({ id, title, date, author, content, likes }) => {
           <BlogAuthor>By {author}</BlogAuthor>
         </DateAuthorHolder>
         <Content dangerouslySetInnerHTML={{ __html: truncatedContent }} />
-        <ReadLikeHolder>
+        {/* <ReadLikeHolder>
           <BlogLikes>
             <AiTwotoneLike /> {likes}
           </BlogLikes>
-        </ReadLikeHolder>
+        </ReadLikeHolder> */}
       </ContentHolder>
     </BoxComponent>
   );

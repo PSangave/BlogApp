@@ -5,13 +5,13 @@ import Button from "@mui/joy/Button";
 import { useState, useEffect } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
-import {jwtDecode} from "jwt-decode";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { getValueFromCookie } from "../utils/utility";
-import axios from 'axios';
-
-
+import axios from "axios";
 import icon from "../assets/login_page_icon.png";
+import { useDispatch } from "react-redux";
+import Header from "../components/Header";
 
 const BoxComponent = styled(Box)`
   width: 350px;
@@ -65,18 +65,21 @@ const GoogleOAuthBox = styled(Box)`
 
 // Function to save user data to db
 async function saveUserData(userData) {
-    try {
-      await axios
-        .post("http://localhost:5000/create_user", userData)
-        .then(res => console.log("Login.jsx: User created on db"))
-        .catch(err => console.error("Login.jsx: User not created on db: " + err.message));
-    } catch (err) {
-        console.log("Login.jsx: User not created: ", err);
-    }
+  try {
+    await axios
+      .post("http://localhost:5000/create_user", userData)
+      .then((res) => console.log("Login.jsx: User created on db"))
+      .catch((err) =>
+        console.error("Login.jsx: User not created on db: " + err.message)
+      );
+  } catch (err) {
+    console.log("Login.jsx: User not created: ", err);
+  }
 }
 
 const Login = () => {
-  const navigate = useNavigate();  // Initialize useNavigate hook
+  const navigate = useNavigate(); // Initialize useNavigate hook
+  const dispatch = useDispatch();
 
   let initialSignupText = {
     name: "",
@@ -98,16 +101,17 @@ const Login = () => {
   const signupUser = () => {};
 
   useEffect(() => {
-    const token = getValueFromCookie('jti');
+    const token = getValueFromCookie("jti");
     if (token) {
-      navigate('/');  // Adjust this path as needed
+      navigate("/"); // Adjust this path as needed
     } else {
-      console.log('Login.jsx: No jti found');
+      console.log("Login.jsx: No jti found");
     }
   }, [navigate]);
 
   return (
     <>
+      <Header/>
       <Box>
         {account === "login" ? (
           <BoxComponent>
@@ -121,14 +125,16 @@ const Login = () => {
                     const decoded = jwtDecode(credentialResponse.credential);
 
                     // storing in cookies
-                    document.cookie=`given_name=${decoded.given_name}`;
-                    document.cookie=`family_name=${decoded.family_name}`;
-                    document.cookie=`email=${decoded.email}`; 
-                    document.cookie=`jti=${decoded.jti}`;
-                    document.cookie=`picture=${decoded.picture}`;
-                    
-                    console.log('Login.jsx: JTI = ' + getValueFromCookie(document.cookie, "jti"));
-                    
+                    document.cookie = `given_name=${decoded.given_name}`;
+                    document.cookie = `family_name=${decoded.family_name}`;
+                    document.cookie = `email=${decoded.email}`;
+                    document.cookie = `jti=${decoded.jti}`;
+                    document.cookie = `picture=${decoded.picture}`;
+
+                    console.log(
+                      "Login.jsx: JTI = " +
+                        getValueFromCookie(document.cookie, "jti")
+                    );
 
                     // Saving to db
                     const first_name = decoded.given_name;
@@ -137,18 +143,23 @@ const Login = () => {
                     const jti = decoded.jti;
                     const image_url = decoded.picture;
 
-                    saveUserData(
-                      {
-                        "first_name": first_name, 
-                        "last_name": last_name, 
-                        "email": email, 
-                        "jti": jti, 
-                        "image_url": image_url});
+                    let user_Data = {
+                      first_name: first_name,
+                      last_name: last_name,
+                      email: email,
+                      jti: jti,
+                      image_url: image_url,
+                    };
+
+                    console.log("dispatchnig...");
                     
+                    dispatch({ type: "LOGIN_SUCCESS", payload: user_Data });
+
+                    saveUserData(user_Data);
+
                     setTimeout(() => {
-                      navigate('/');  // Redirect to home after successful login
+                      navigate("/"); // Redirect to home after successful login
                     }, 2000);
-                    
                   }}
                   onError={() => {
                     console.log("Login.jsx: Google Authentication Failed");

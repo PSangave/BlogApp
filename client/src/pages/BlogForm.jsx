@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import { getValueFromCookie } from "../utils/utility";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Container = styled(Box)`
   width: 50%;
@@ -24,12 +25,22 @@ const BlogForm = () => {
   const navigate = useNavigate(); // Initialize useNavigate hook
   const jti = getValueFromCookie(document.cookie, "jti");
 
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  /***
+   * NOTE:
+   *  HERE my intension was to use the Redux to maintain authentication state, but problem is 
+   *  when we refresh the page we loose our state, so that's why I am using cookies to maintain \
+   *  the login state.
+   */
+
+
+  console.log("Is Authenticated: " + isAuthenticated);
+
   useEffect(() => {
-    if (jti) {
-      // Redirect to another page if token exists
-      console.log("Yetoe jti BlogFrom madhe!");
+    if (jti) {  // JIT Is nothing but security token stored in cookies, -by pranav s.
+      console.log("Its autenticated");
     } else {
-      console.log("No token found");
       navigate("/login"); // Adjust this path as needed
     }
   }, [jti, navigate]);
@@ -37,7 +48,7 @@ const BlogForm = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Optional: Disable submit button during submission
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
