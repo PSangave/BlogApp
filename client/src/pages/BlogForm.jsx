@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, TextField, styled, Typography } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // import styles
 import Header from "../components/Header";
 import { getValueFromCookie } from "../utils/utility";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled(Box)`
   width: 50%;
@@ -19,6 +20,21 @@ const FormTitle = styled(Typography)`
 `;
 
 const BlogForm = () => {
+
+  const navigate = useNavigate(); // Initialize useNavigate hook
+  const jti = getValueFromCookie(document.cookie, "jti");
+
+  useEffect(() => {
+    if (jti) {
+      // Redirect to another page if token exists
+      console.log("Yetoe jti BlogFrom madhe!");
+    } else {
+      console.log("No token found");
+      navigate("/login"); // Adjust this path as needed
+    }
+  }, [jti, navigate]);
+
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false); // Optional: Disable submit button during submission
@@ -31,8 +47,6 @@ const BlogForm = () => {
       getValueFromCookie(document.cookie, "given_name") +
       " " +
       getValueFromCookie(document.cookie, "family_name");
-
-    const jti = getValueFromCookie(document.cookie, "jti");
 
     const likes = 0;
     const postData = { title, author, content, likes, jti };

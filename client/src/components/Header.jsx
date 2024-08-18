@@ -2,7 +2,8 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import {Box,styled} from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
-import { deleteJTICookie } from "../utils/utility";
+import { deleteJTICookie, getValueFromCookie } from "../utils/utility";
+import { useEffect, useState } from "react";
 
 const BoxComponent = styled(Box)`
         width: 100%;
@@ -19,11 +20,43 @@ const LinkComponent = styled(Link)`
 const Header = () => {
   const navigate = useNavigate();  // Initialize useNavigate hook
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    console.log("Header.jsx: ", isLoggedIn);
+    
+    const jti = getValueFromCookie(document.cookie, "jti");
+    if(jti) {
+      setIsLoggedIn(true);
+    }
+  }, [isLoggedIn]);
+
   function logout() {
+    deleteJTICookie();
+    deleteJTICookie();
     deleteJTICookie();
     setTimeout(() => {
       navigate('/login');
     }, 1000);
+  }
+
+  function login() {
+    setTimeout(() => {
+      navigate('/login');
+    }, 1000);
+  }
+
+  function handleWriteBlogClick() {
+    if(isLoggedIn) {
+      setTimeout(() => {
+        navigate('/create');
+      }, 1000);
+    } else {
+      alert("Please Login To Write Your Blog!");
+      setTimeout(() => {
+        navigate('/login');
+      }, 1000);
+    }
   }
 
   return (
@@ -33,8 +66,17 @@ const Header = () => {
           <BoxComponent>
                 <LinkComponent to="/" color="inherit">Home</LinkComponent>
                 <LinkComponent color="inherit">About Us</LinkComponent>
-                <LinkComponent to="/create" color="inherit">Write Your Blog</LinkComponent>
-                <LinkComponent to="/login" onClick={logout} color="inherit">Logout</LinkComponent>
+
+
+                <LinkComponent onClick={handleWriteBlogClick} color="inherit">Write Your Blog</LinkComponent>
+
+                 {
+                  isLoggedIn === true ? 
+                  (<LinkComponent  onClick={logout} color="inherit">Logout</LinkComponent>) :
+                  (<LinkComponent onClick={login} color="inherit">Login</LinkComponent>) 
+                 }
+
+                
           </BoxComponent>
         </Toolbar>
       </AppBar>

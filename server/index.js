@@ -124,4 +124,16 @@ app.put("/update_comment/:id", async (req, res) => {
 });
 
 
+// To delete content
+app.delete('/delete_comment/:id', async (req, res) => {
+  try {
+          const deletedComment = await Comment.findByIdAndDelete(req.params.id);
+          if(!deletedComment) return res.status(404).json({message: 'Post not found'});
+          res.status(200).json({message: 'Comment Deleted'});
+  } catch(err) {
+          res.status(500).json({message: err.message});
+  }
+});
+
+
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));

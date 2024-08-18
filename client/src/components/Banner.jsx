@@ -1,5 +1,4 @@
 import { Box, Typography, styled } from "@mui/material";
-import {getValueFromCookie} from "../utils/utility.js";
 
 const Image = styled(Box)`
   height: 300px;
@@ -21,12 +20,10 @@ const TypographyComponent = styled(Typography)`
 `;
 
 const Banner = () => {
-  // fetching values from cookies
-  const family_name = getValueFromCookie(document.cookie, "family_name");
 
   return (
     <Image>
-      <TypographyComponent>Welcome {family_name}</TypographyComponent>
+      <TypographyComponent>Blogs</TypographyComponent>
     </Image>
   );
 };

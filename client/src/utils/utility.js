@@ -26,6 +26,8 @@ export function deleteCookie(cookieName) {
 export function deleteJTICookie() {
         // Set the cookie with the same name and an expiry date in the past
         document.cookie = `jti=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `given_name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `family_name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
 
 

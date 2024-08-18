@@ -1,8 +1,8 @@
 import { Box, Divider, styled, Typography, TextField, Button } from "@mui/material";
-import { AiTwotoneLike } from "react-icons/ai";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useState } from "react";
+import { getValueFromCookie } from "../utils/utility";
 
 const BoxComponent = styled(Box)`
   height: auto;
@@ -61,9 +61,20 @@ const ReadLikeHolder = styled(Box)`
   margin-bottom: 10px;
 `;
 
-const CommentCard = ({ author, date, content, likes, onUpdateComment }) => {
+const CommentCard = ({ author, date, content, likes, jti, onUpdateComment, onDeleteComment }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
+
+  const comment_author_from_cookie =
+        getValueFromCookie(document.cookie, "given_name") +
+        " " +
+        getValueFromCookie(document.cookie, "family_name");
+
+  console.log("comment_author_from_cookie: " + comment_author_from_cookie);
+  console.log("author: " + author);
+  
+  
+  
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -73,6 +84,10 @@ const CommentCard = ({ author, date, content, likes, onUpdateComment }) => {
     onUpdateComment(editedContent); // Call the update function passed as a prop
     setIsEditing(false);
   };
+
+  const handlDeleteClick = () => {
+        onDeleteComment();
+  }
 
   const dateDay =
     new Date(date).getDate() +
@@ -100,14 +115,18 @@ const CommentCard = ({ author, date, content, likes, onUpdateComment }) => {
         ) : (
           <BlogContent>{content}</BlogContent>
         )}
-        <ReadLikeHolder>
-          <BlogEdit onClick={handleEditClick}>
-            <FaEdit /> {likes}
-          </BlogEdit>
-          <BlogDelete>
-            <MdDelete /> {likes}
-          </BlogDelete>
-        </ReadLikeHolder>
+        {
+          (comment_author_from_cookie === author) ? 
+          (<ReadLikeHolder>
+            <BlogEdit onClick={handleEditClick}>
+              <FaEdit />
+            </BlogEdit>
+            <BlogDelete onClick={handlDeleteClick}>
+              <MdDelete />
+            </BlogDelete>
+          </ReadLikeHolder>) :
+          (<></>)
+        }
         <Divider />
       </ContentHolder>
     </BoxComponent>

@@ -19,6 +19,10 @@ const CommentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    jti: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

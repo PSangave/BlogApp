@@ -55,10 +55,6 @@ const ButtonComponent = styled(Button)`
   margin-top: 0px;
 `;
 
-// const DividerComponent = styled(Divider)`
-//   margin-bottom: 20px;
-// `;
-
 const GoogleOAuthProviderComponent = styled(GoogleOAuthProvider)`
   border: 3px solid;
 `;
@@ -72,10 +68,10 @@ async function saveUserData(userData) {
     try {
       await axios
         .post("http://localhost:5000/create_user", userData)
-        .then(res => console.log("Data uploaded!"))
-        .catch(err => console.error(err));
+        .then(res => console.log("Login.jsx: User created on db"))
+        .catch(err => console.error("Login.jsx: User not created on db: " + err.message));
     } catch (err) {
-        console.log("User data not stored: ", err);
+        console.log("Login.jsx: User not created: ", err);
     }
 }
 
@@ -97,19 +93,16 @@ const Login = () => {
 
   const setTextInput = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
-    // console.log(initialSignupText);
   };
 
   const signupUser = () => {};
 
   useEffect(() => {
-    const token = getValueFromCookie('given_name');
+    const token = getValueFromCookie('jti');
     if (token) {
-      // console.log('Token found:', token);
-      // Redirect to another page if token exists
       navigate('/');  // Adjust this path as needed
     } else {
-      console.log('No token found');
+      console.log('Login.jsx: No jti found');
     }
   }, [navigate]);
 
@@ -121,23 +114,6 @@ const Login = () => {
             <Image src={icon} alt="logo" />
             <CardTitle>Log in to your account</CardTitle>
             <CardDesc>Start writing your thoughts.</CardDesc>
-            {/* <TFComponent
-              variant="outlined"
-              label="Enter your email"
-              size="small"
-              margin="none"
-            ></TFComponent>
-            <TFComponent
-              variant="outlined"
-              label="Enter your password"
-              size="small"
-              margin="none"
-            ></TFComponent>
-            <ButtonComponent>Login</ButtonComponent>
-            <ButtonComponent onClick={() => changeToggle()}>
-              Create new account
-            </ButtonComponent>
-            <DividerComponent>Or</DividerComponent> */}
             <GoogleOAuthBox>
               <GoogleOAuthProviderComponent clientId="830129100854-6eo07cq6rh96ckbvnn0tlejitpj17jqj.apps.googleusercontent.com">
                 <GoogleLogin
@@ -145,14 +121,15 @@ const Login = () => {
                     const decoded = jwtDecode(credentialResponse.credential);
 
                     // storing in cookies
-
                     document.cookie=`given_name=${decoded.given_name}`;
                     document.cookie=`family_name=${decoded.family_name}`;
                     document.cookie=`email=${decoded.email}`; 
                     document.cookie=`jti=${decoded.jti}`;
                     document.cookie=`picture=${decoded.picture}`;
-                    // console.log(decoded);
                     
+                    console.log('Login.jsx: JTI = ' + getValueFromCookie(document.cookie, "jti"));
+                    
+
                     // Saving to db
                     const first_name = decoded.given_name;
                     const last_name = decoded.family_name;
@@ -160,7 +137,13 @@ const Login = () => {
                     const jti = decoded.jti;
                     const image_url = decoded.picture;
 
-                    saveUserData({first_name, last_name, email, jti, image_url});
+                    saveUserData(
+                      {
+                        "first_name": first_name, 
+                        "last_name": last_name, 
+                        "email": email, 
+                        "jti": jti, 
+                        "image_url": image_url});
                     
                     setTimeout(() => {
                       navigate('/');  // Redirect to home after successful login
@@ -168,7 +151,7 @@ const Login = () => {
                     
                   }}
                   onError={() => {
-                    console.log("Login Failed");
+                    console.log("Login.jsx: Google Authentication Failed");
                   }}
                 />
               </GoogleOAuthProviderComponent>
