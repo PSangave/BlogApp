@@ -19,7 +19,10 @@ app.use(express.json());
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected!"))
-  .catch((err) => console.log("MongoDB Not Connected!: ", err));
+  .catch((err) => {
+    console.log("MongoDB Not Connected!: ", err);
+    alert("Connection issue with MongoDB! Please try again later!");
+  });
 
 // APIS
 
@@ -37,6 +40,7 @@ app.post("/post", async (req, res) => {
     res
       .status(500)
       .json({ message: "Post not saved because:" + error.message });
+    alert("Problem with saving your post! Please try again later.");
   }
 });
 
@@ -50,6 +54,7 @@ app.post("/create_user", async (req, res) => {
     res
       .status(500)
       .json({ message: "User not saved because:" + error.message });
+    alert("Problem with saving user data! Please try again later.");
   }
 });
 
@@ -61,7 +66,9 @@ app.post("/post_comment", async (req, res) => {
     res.status(201).json(savedComment);
   } catch (error) {
     res
-      .status(500).json({ message: "COmment not saved because: " + error.message });
+      .status(500)
+      .json({ message: "Comment not saved because: " + error.message });
+    alert("Problem with saving your comment! Please try again later.");
   }
 });
 
@@ -72,6 +79,7 @@ app.get("/get_blogs", async (req, res) => {
     res.status(200).json(posts);
   } catch (error) {
     console.log("Error while fetching blogs: ", error);
+    alert("Problem while fetching the blogs! Please try again later.");
   }
 });
 
@@ -106,6 +114,7 @@ app.get("/get_blog/:id", async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Error fetching post", error });
+    alert("Problem with fetching your post! Please try again later.");
   }
 });
 
@@ -120,18 +129,79 @@ app.put("/update_comment/:id", async (req, res) => {
     res.status(200).json({ message: "Comment updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to update comment" });
+    alert("Problem with updating your comment! Please try again later.");
   }
 });
 
+// Update a blog post by ID
+app.put("/post/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, content, jti } = req.body;
+
+  try {
+      // Find the blog post by ID
+      const post = await Post.findById(id);
+
+      if (!post) {
+          return res.status(404).json({ message: "Blog post not found" });
+      }
+
+      // Update the blog post with new title and content
+      post.title = title;
+      post.content = content;
+
+      await post.save();
+
+      res.status(200).json({ message: "Blog post updated successfully", post });
+  } catch (error) {
+      console.error("Error updating blog post:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 // To delete content
-app.delete('/delete_comment/:id', async (req, res) => {
+app.delete("/delete_comment/:id", async (req, res) => {
   try {
-          const deletedComment = await Comment.findByIdAndDelete(req.params.id);
-          if(!deletedComment) return res.status(404).json({message: 'Post not found'});
-          res.status(200).json({message: 'Comment Deleted'});
-  } catch(err) {
-          res.status(500).json({message: err.message});
+    const deletedComment = await Comment.findByIdAndDelete(req.params.id);
+    if (!deletedComment)
+      return res.status(404).json({ message: "Post not found" });
+    res.status(200).json({ message: "Comment Deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+    alert("Problem with deleting your comment! Please try again later.");
+  }
+});
+
+// GET /posts/author/:authorName - Fetch blogs by author
+app.get("/posts/author/:authorName", async (req, res) => {
+  try {
+    const { authorName } = req.params;
+
+    // Find all posts where the author matches the given authorName
+    const posts = await Post.find({ author: authorName });
+
+    if (posts.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No blogs found for this author" });
+    }
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching blogs by author:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.delete("/delete_blog/:id", async (req, res) => {
+  try {
+    const deletedBlog = await Post.findByIdAndDelete(req.params.id);
+    if (!deletedBlog)
+      return res.status(404).json({ message: "Post not found" });
+    res.status(200).json({ message: "Post Deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+    alert("Problem with deleting your Post! Please try again later.");
   }
 });
 

@@ -46,12 +46,13 @@ const BlogContent = styled(Typography)`
   margin: 40px 0px 10px 5px;
 `;
 
-
 const CommentBoxContainer = styled(Box)`
   display: flex;
   align-items: center;
   margin-bottom: 30px;
 `;
+
+const EditDeleteHolder = styled(Box)``;
 
 const Blog = () => {
   const navigate = useNavigate(); // Initialize useNavigate hook
@@ -93,6 +94,12 @@ const Blog = () => {
     } else {
       const blog_id = id;
       const comment_content = cmntTxt;
+
+      if (comment_content === "") {
+        alert("Please write comment first!");
+        return;
+      }
+
       const likes = 0;
       const comment_author =
         getValueFromCookie(document.cookie, "given_name") +
@@ -159,11 +166,7 @@ const Blog = () => {
           <BlogDate>{dateDay}</BlogDate>
           <BlogAuthor>By {author}</BlogAuthor>
         </DateAuthorHolder>
-        {/* <ReadLikeHolder>
-          <BlogAuthor>
-            <AiTwotoneLike /> {likes}
-          </BlogAuthor>
-        </ReadLikeHolder> */}
+
         <BlogContent>
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </BlogContent>
