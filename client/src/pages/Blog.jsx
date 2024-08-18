@@ -76,6 +76,7 @@ const Blog = () => {
   const [content, setContent] = useState("");
   const [comment, setComment] = useState([]);
   const [refreshId, setRefreshId] = useState("");
+  const [c_author, setCAuthor] = useState("");
 
   useEffect(() => {
     console.log("Effect Calling...");
@@ -91,7 +92,6 @@ const Blog = () => {
       setContent(resp.data.content);
       setComment(resp.data.comments);
     }
-
     getBlogFromId();
   }, [id, refreshId]); // Add refreshId as a dependency
 
@@ -100,27 +100,35 @@ const Blog = () => {
     const comment_content = cmntTxt;
     const likes = 0;
     const comment_author = getValueFromCookie(document.cookie, "given_name") + " " +getValueFromCookie(document.cookie, "family_name");
-    console.log(comment_author);
+    setCAuthor(comment_author);
+    console.log("typeof:" + typeof(author));
     async function postComment() {
-      alert("Called");
       await axios
         .post("http://localhost:5000/post_comment", {
           blog_id,
           comment_content,
           likes,
-          comment_author
+          author: comment_author
         })
         .then((r) => console.log("Comment Posted"))
         .catch((e) => console.log("Failed to post comment: " + e.message));
 
-      alert("Commented Successfully!");
-
-      setCmntTxt("");
-
+        setCmntTxt('');
       // Update refreshId to trigger useEffect
       setRefreshId(`refresh_${Date.now()}`);
     }
     postComment();
+  };
+
+  const handleUpdateComment = async (commentId, updatedContent) => {
+    try {
+      await axios.put(`http://localhost:5000/update_comment/${commentId}`, {
+        comment_content: updatedContent,
+      });
+      setRefreshId(`refresh_${Date.now()}`); // Refresh comments after updating
+    } catch (e) {
+      console.log("Failed to update comment: " + e.message);
+    }
   };
 
   const dateDay =
@@ -169,13 +177,16 @@ const Blog = () => {
             Post
           </Button>
         </CommentBoxContainer>
-        {comment.map((cmnt, i) => (
+        {comment.slice().reverse().map((cmnt, i) => (
           <CommentCard
             key={i}
-            author={"Pranav"}
+            author={cmnt.author}
             date={cmnt.createdAt}
             content={cmnt.comment_content}
             likes={cmnt.like}
+            onUpdateComment={(updatedContent) =>
+              handleUpdateComment(cmnt._id, updatedContent)
+            }
           />
         ))}
       </BoxContainer>

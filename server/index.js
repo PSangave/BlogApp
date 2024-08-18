@@ -61,8 +61,7 @@ app.post("/post_comment", async (req, res) => {
     res.status(201).json(savedComment);
   } catch (error) {
     res
-      .status(500)
-      .json({ message: "COmment not saved because: " + error.message });
+      .status(500).json({ message: "COmment not saved because: " + error.message });
   }
 });
 
@@ -109,5 +108,20 @@ app.get("/get_blog/:id", async (req, res) => {
     res.status(500).json({ message: "Error fetching post", error });
   }
 });
+
+// To update comment
+app.put("/update_comment/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { comment_content } = req.body;
+
+    await Comment.findByIdAndUpdate(id, { comment_content });
+
+    res.status(200).json({ message: "Comment updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update comment" });
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
