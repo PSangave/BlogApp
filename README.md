@@ -10,12 +10,11 @@
 - **Blog Management**: Users can create, edit, and delete blog posts. The home page displays a list of all blogs, while each blog page displays the blog content along with user comments.
 - **Real-Time Comments**: Users can comment on blog posts with real-time updates, ensuring that all participants see new comments immediately.
 - **Comment Editing and Deletion**: Users have the ability to edit or delete their comments, providing flexibility in managing their contributions.
-- **Responsive Design**: The application is designed to work seamlessly across various devices, including desktops, tablets, and smartphones.
 - **Google Authentication**: Integrated Google OAuth for user authentication, ensuring a secure and familiar login experience.
 
 ## Technology Stack
 
-- **Frontend**: React.js, TypeScript, Redux, React Router, ReactQuill (for rich text editing).
+- **Frontend**: React.js, React-Router-DOM, Redux, React Router, ReactQuill (for rich text editing).
 - **Backend**: Node.js, Express.js, Mongoose.
 - **Database**: MongoDB Atlas, utilized for storing user information, blog posts, and comments.
 
@@ -30,7 +29,7 @@
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/my-blog-app.git
+    git clone git@github.com:PSangave/BlogApp.git
     ```
 2. **Navigate to the project directory**:
     ```bash
@@ -51,7 +50,6 @@
      ```
      MONGO_URI=your_mongodb_atlas_uri
      GOOGLE_CLIENT_ID=your_google_client_id
-     GOOGLE_CLIENT_SECRET=your_google_client_secret
      ```
 6. **Start the development server**:
     ```bash
