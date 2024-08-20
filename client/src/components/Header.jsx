@@ -72,7 +72,7 @@ const Header = () => {
                 {/* <LinkComponent color="inherit">About Us</LinkComponent> */}
 
 
-                <LinkComponent onClick={handleWriteBlogClick} color="inherit">Write Your Blog</LinkComponent>
+                <LinkComponent onClick={handleWriteBlogClick} color="inherit">Manage Your Blogs</LinkComponent>
 
                  {
                   isLoggedIn === true ? 
